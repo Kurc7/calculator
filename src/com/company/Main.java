@@ -108,6 +108,14 @@ public class Main {
             }
             tenСheck(math_int[0]);
             tenСheck(math_int[1]);
+            if (math_int[1] == 0 ){
+                try {
+                    throw new IOException();
+                } catch (IOException e) {
+                    System.out.println("Ошибка: Нельзя делить на ноль , калькулятор прекращает работу");
+                    System.exit(0);
+                }
+            }
             result = math_int[0] / math_int[1];
         }
 
