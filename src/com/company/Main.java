@@ -16,7 +16,7 @@ public class Main {
     }
 
     public static String calc(String input) {
-        input = input.replaceAll("\\s", ""); //removes all spaces and invisible characters
+        input = input.replaceAll("\\s", ""); //убираем пробелы и невидимые символы
         input = input.toUpperCase(); // при наличии римских цифр переводим их в верхний регистр
         String[] math = {"", ""};
         int[] math_int = new int[2];
@@ -25,105 +25,81 @@ public class Main {
         boolean string_type_roman = false;
         boolean string_type_arabian = false;
 
-        if (!input.matches("^([\\d|[I|V|X]]{1,4})([*|/|\\-|+])([\\d|[I|V|X]]{1,4})$")) {
-            try {
-                throw new IOException();
-            } catch (IOException e) {
-                System.out.println("Ошибка ввода: строка не является математической операцией или формат математической операции не удовлетворяет заданию.\nСтрока должна содержать римские Цифры или Арабские не превышающие значения 10, " +
-                        "а так же один арифметический знак (+,-,/,*)");
-                System.exit(0);
-            }
+        if (!input.matches("^([\\d|[I|V|X]]{1,4})([*|/|\\-|+])([\\d|[I|V|X]]{1,4})$")) { //облегчаем жизнь...
+            exception("regular");
         }
 
-        //проверяем на римские цифры
-        for (RomanNumeral r : RomanNumeral.values()) {
+        for (RomanNumeral r : RomanNumeral.values()) {//проверяем на римские цифры
             if (input.contains(r.name())) {
                 string_type_roman = true;
                 break;
             }
         }
-        //Проверяем на арабские цифры
-        for (int i = 1; i < 11; i++) {
+
+        for (int i = 1; i < 11; i++) {  //Проверяем на арабские цифры
             if (input.contains(Integer.toString(i))) {
                 string_type_arabian = true;
                 break;
             }
         }
 
-        //проверяем на условие использования одного типа цифр
-        if ((string_type_roman == string_type_arabian)) {
-            try {
-                throw new IOException();
-            } catch (IOException e) {
-                System.out.println("Ошибка: Введено не корректное выражение, цифры должны быть арабскими или римскими , калькулятор прекращает работу");
-                System.exit(0);
-            }
+        if ((string_type_roman == string_type_arabian)) {   //проверяем на условие использования одного типа цифр
+            exception("number or letter");
         }
 
-        //считаем
-        if (input.contains("+") && input.charAt(0) != '+') {
+        if (input.contains("+") && input.charAt(0) != '+') {    //считаем
             math = input.split("\\+");
             if (string_type_roman == true) {
-                math_int[0] = RomanNumeral.I.getValue(math[0]);
-                math_int[1] = RomanNumeral.I.getValue(math[1]);
+                math_int = parseRomOrArab(math,'r');
             } else if (string_type_arabian == true) {
-                math_int[0] = Integer.parseInt((math[0]));
-                math_int[1] = Integer.parseInt((math[1]));
+                math_int = parseRomOrArab(math,'a');
             }
-            tenСheck(math_int[0]);
-            tenСheck(math_int[1]);
+            if(math_int[0] >10 || math_int[1] >10){
+                exception("tenСheck");
+            }
             result = math_int[0] + math_int[1];
         } else if (input.contains("-") && input.charAt(0) != '-') {
             math = input.split("-");
             if (string_type_roman == true) {
-                math_int[0] = RomanNumeral.I.getValue(math[0]);
-                math_int[1] = RomanNumeral.I.getValue(math[1]);
+                math_int = parseRomOrArab(math,'r');
             } else if (string_type_arabian == true) {
-                math_int[0] = Integer.parseInt((math[0]));
-                math_int[1] = Integer.parseInt((math[1]));
+                math_int = parseRomOrArab(math,'a');
             }
-            tenСheck(math_int[0]);
-            tenСheck(math_int[1]);
+            if(math_int[0] >10 || math_int[1] >10){
+                exception("tenСheck");
+            }
             result = math_int[0] - math_int[1];
         } else if (input.contains("*") && input.charAt(0) != '*') {
             math = input.split("\\*");
             if (string_type_roman == true) {
-                math_int[0] = RomanNumeral.I.getValue(math[0]);
-                math_int[1] = RomanNumeral.I.getValue(math[1]);
+                math_int = parseRomOrArab(math,'r');
             } else if (string_type_arabian == true) {
-                math_int[0] = Integer.parseInt((math[0]));
-                math_int[1] = Integer.parseInt((math[1]));
+                math_int = parseRomOrArab(math,'a');
             }
-            tenСheck(math_int[0]);
-            tenСheck(math_int[1]);
+            if(math_int[0] >10 || math_int[1] >10){
+                exception("tenСheck");
+            }
             result = math_int[0] * math_int[1];
         } else if (input.contains("/") && input.charAt(0) != '/') {
             math = input.split("/");
             if (string_type_roman == true) {
-                math_int[0] = RomanNumeral.I.getValue(math[0]);
-                math_int[1] = RomanNumeral.I.getValue(math[1]);
+                math_int = parseRomOrArab(math,'r');
             } else if (string_type_arabian == true) {
-                math_int[0] = Integer.parseInt((math[0]));
-                math_int[1] = Integer.parseInt((math[1]));
+                math_int = parseRomOrArab(math,'a');
             }
-            tenСheck(math_int[0]);
-            tenСheck(math_int[1]);
-            if (math_int[1] == 0 ){
-                try {
-                    throw new IOException();
-                } catch (IOException e) {
-                    System.out.println("Ошибка: Нельзя делить на ноль , калькулятор прекращает работу");
-                    System.exit(0);
-                }
+            if(math_int[0] >10 || math_int[1] >10){
+                exception("tenСheck");
+            }
+            if (math_int[1] == 0) {
+                exception("division by zero");
             }
             result = math_int[0] / math_int[1];
         }
 
-        if (string_type_roman == true) {
-            if (result > 0) {
+        if (string_type_roman == true) {    //«Нет ничего более беспомощного, безответственного и испорченного,
+            if (result > 0) {               //чем цикл в цикле. Я знал, что рано или поздно мы перейдем и на эту дрянь.»
                 int[] A = {1, 4, 5, 9, 10, 40, 50, 90, 100};
                 String[] R = {"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C"};
-                //перевод цифр в римские
                 int i = 8;
                 String res = "";
                 while (result > 0) {
@@ -135,34 +111,15 @@ public class Main {
                 }
                 result_str = "Результат в римском исчилении: " + res;
             } else {
-                try {
-                    throw new IOException();
-                } catch (IOException e) {
-                    System.out.println("Ошибка: Римские числа не могут быть отрицательными, калькулятор прекращает работу");
-                    System.exit(0);
-                }
+                exception("negative roman");
             }
         } else if (string_type_arabian) {
             result_str = "Результат: " + String.valueOf(result);
         }
-
         return result_str;
     }
 
-    //проверка на соответствие переменная <= 10
-    static void tenСheck(int num) {
-        if (num > 10) {
-            try {
-                throw new IOException();
-            } catch (IOException e) {
-                System.out.println("Ошибка: заданные значения не могут привышать 10, калькулятор прекращает работу");
-                System.exit(0);
-            }
-        }
-    }
-
-    //соответствие рисмских и арбаскиц цифр на ввод (несовсем корректно с getValue, но хотелось попробывать)
-    enum RomanNumeral {
+    enum RomanNumeral {     //соответствие рисмских и арбаскиц цифр на ввод
         I(1), II(2), III(3), IV(4), V(5), VI(6), VII(7), VIII(8), IX(9), X(10);
 
         private int value;
@@ -170,15 +127,49 @@ public class Main {
         RomanNumeral(int value) {
             this.value = value;
         }
+    }
 
-        int getValue(String str) {
-            int num = 0;
-            for (RomanNumeral r : RomanNumeral.values()) {
-                if (r.name().equals(str)) {
-                    num = r.value;
+    static int[] parseRomOrArab(String[] str_arr, char type) { //преобразование String в int
+        int[] num = new int[2];
+        int i = 0;
+        for (String s : str_arr) {
+            if(type=='r') {
+                for (RomanNumeral r : RomanNumeral.values()) {
+                    if (r.name().equals(s)) {
+                        num[i] = r.value;
+                    }
                 }
+            }else if(type=='a'){
+                num[i] = Integer.parseInt(s);
             }
-            return num;
+            i++;
+        }
+        return num;
+    }
+
+    static void exception(String description) {
+        try {
+            throw new IOException();
+        } catch (IOException e) {
+            switch (description) {
+                case "regular":
+                    System.out.println("Строка не является математической операцией или формат не удовлетворяет заданию.\n" +
+                            "Вводить нужно римские Цифры или Арабские не превышающие значения 10, а так же один арифметический знак (+,-,/,*)");
+                    break;
+                case "number or letter":
+                    System.out.println("Введено не корректное выражение, цифры должны быть арабскими или римскими , калькулятор прекращает работу");
+                    break;
+                case "division by zero":
+                    System.out.println("Нельзя делить на ноль , калькулятор прекращает работу");
+                    break;
+                case "negative roman":
+                    System.out.println("Римские числа не могут быть отрицательными, калькулятор прекращает работу");
+                    break;
+                case "tenСheck":
+                    System.out.println("Заданные значения не могут привышать 10, калькулятор прекращает работу");
+                    break;
+            }
+            System.exit(0);
         }
     }
-}
+}   //175 день в году - День независимости в Шотландии... конечно если год не високосный...
