@@ -50,44 +50,44 @@ public class Main {
         if (input.contains("+") && input.charAt(0) != '+') {    //считаем
             math = input.split("\\+");
             if (string_type_roman == true) {
-                math_int = parseRomOrArab(math,'r');
+                math_int = parseRomOrArab(math, 'r');
             } else if (string_type_arabian == true) {
-                math_int = parseRomOrArab(math,'a');
+                math_int = parseRomOrArab(math, 'a');
             }
-            if(math_int[0] >10 || math_int[1] >10){
+            if (math_int[0] > 10 || math_int[1] > 10) {
                 exception("tenСheck");
             }
             result = math_int[0] + math_int[1];
         } else if (input.contains("-") && input.charAt(0) != '-') {
             math = input.split("-");
             if (string_type_roman == true) {
-                math_int = parseRomOrArab(math,'r');
+                math_int = parseRomOrArab(math, 'r');
             } else if (string_type_arabian == true) {
-                math_int = parseRomOrArab(math,'a');
+                math_int = parseRomOrArab(math, 'a');
             }
-            if(math_int[0] >10 || math_int[1] >10){
+            if (math_int[0] > 10 || math_int[1] > 10) {
                 exception("tenСheck");
             }
             result = math_int[0] - math_int[1];
         } else if (input.contains("*") && input.charAt(0) != '*') {
             math = input.split("\\*");
             if (string_type_roman == true) {
-                math_int = parseRomOrArab(math,'r');
+                math_int = parseRomOrArab(math, 'r');
             } else if (string_type_arabian == true) {
-                math_int = parseRomOrArab(math,'a');
+                math_int = parseRomOrArab(math, 'a');
             }
-            if(math_int[0] >10 || math_int[1] >10){
+            if (math_int[0] > 10 || math_int[1] > 10) {
                 exception("tenСheck");
             }
             result = math_int[0] * math_int[1];
         } else if (input.contains("/") && input.charAt(0) != '/') {
             math = input.split("/");
             if (string_type_roman == true) {
-                math_int = parseRomOrArab(math,'r');
+                math_int = parseRomOrArab(math, 'r');
             } else if (string_type_arabian == true) {
-                math_int = parseRomOrArab(math,'a');
+                math_int = parseRomOrArab(math, 'a');
             }
-            if(math_int[0] >10 || math_int[1] >10){
+            if (math_int[0] > 10 || math_int[1] > 10) {
                 exception("tenСheck");
             }
             if (math_int[1] == 0) {
@@ -121,7 +121,6 @@ public class Main {
 
     enum RomanNumeral {     //соответствие рисмских и арбаскиц цифр на ввод
         I(1), II(2), III(3), IV(4), V(5), VI(6), VII(7), VIII(8), IX(9), X(10);
-
         private int value;
 
         RomanNumeral(int value) {
@@ -129,17 +128,23 @@ public class Main {
         }
     }
 
-    static int[] parseRomOrArab(String[] str_arr, char type) { //преобразование String в int
+    private static int[] parseRomOrArab(String[] str_arr, char type) { //преобразование String в int
         int[] num = new int[2];
         int i = 0;
+
         for (String s : str_arr) {
-            if(type=='r') {
+            boolean fail = true;
+            if (type == 'r') {
                 for (RomanNumeral r : RomanNumeral.values()) {
                     if (r.name().equals(s)) {
                         num[i] = r.value;
+                        fail = false;
                     }
                 }
-            }else if(type=='a'){
+                if (fail == true) {
+                    exception("symbol error");
+                }
+            } else if (type == 'a') {
                 num[i] = Integer.parseInt(s);
             }
             i++;
@@ -147,7 +152,7 @@ public class Main {
         return num;
     }
 
-    static void exception(String description) {
+    private static void exception(String description) {
         try {
             throw new IOException();
         } catch (IOException e) {
@@ -168,8 +173,11 @@ public class Main {
                 case "tenСheck":
                     System.out.println("Заданные значения не могут привышать 10, калькулятор прекращает работу");
                     break;
+                case "symbol error":
+                    System.out.println("Не корректно заданы цифры, калькулятор прекращает работу");
+                    break;
             }
             System.exit(0);
         }
     }
-}   //175 день в году - День независимости в Шотландии... конечно если год не високосный...
+}
